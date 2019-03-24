@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget EmailTextField() {
     return TextFormField(
+      style: TextStyle(color: Colors.black),
       decoration:
           InputDecoration(labelText: 'Email : ', hintText: 'you@email.com'),
     );
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget passwordTextFiedl() {
     return TextFormField(
+      style: TextStyle(color: Colors.black),
       decoration: InputDecoration(
           labelText: 'Password : ', hintText: 'More than 6 Charactor'),
     );
@@ -63,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         print('You Clikc Singup');
         var registerroute = new MaterialPageRoute(
             builder: (BuildContext context) => RegisterPage());
-            Navigator.of(context).push(registerroute);
+        Navigator.of(context).push(registerroute);
       },
     );
   }
@@ -88,8 +90,8 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [Colors.yellow[300], Colors.yellow[800]],
-                begin: Alignment(-1, -1))),
+                colors: [Colors.white30, Colors.black45],
+                begin: Alignment(-1, 1))),
         padding: EdgeInsets.only(top: 80.0),
         alignment: Alignment.center,
         child: Column(
@@ -111,11 +113,15 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: signinButton(),
+                  new Expanded(
+                    child: Container(
+                      
+                      child: signinButton(),
+                    ),
                   ),
-                  signupButton(context)
+                  new Expanded(
+                    child: signupButton(context),
+                  )
                 ],
               ),
             )
