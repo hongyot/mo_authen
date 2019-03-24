@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/register_page.dart';
 import 'package:http/http.dart' show get;
 import 'dart:convert';
+import 'models/user_model.dart';
+import 'screens/service.dart';
 
 // void main() {
 //   runApp(App());
@@ -26,6 +28,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final formkey = GlobalKey<FormState>();
+  final myScaffoldsnackbar = GlobalKey<ScaffoldState>();
+
   String email;
   String password;
 
@@ -121,14 +125,50 @@ class _HomePageState extends State<HomePage> {
       var response = await get(urlauthen);
       var result = json.decode(response.body);
       print(result);
-    }
+      if (result.toString() == 'null') {
+        showSnackbar('Wrong Username');
+      } else {
+        String truePassword = '';
+        String nameString = '';
+
+        for (var data in result) {
+          print('data => $data');
+          var userModel = UserModel.fromJson(data);
+          truePassword = userModel.password.toString();
+          nameString = userModel.name.toString();
+
+          if (password == truePassword) {
+            // password true
+            showSnackbar('Welcome $nameString');
+            var serviceRoute = new MaterialPageRoute(
+                builder: (BuildContext context) => Service(nameLoginString: nameString,));
+                Navigator.of(context).push(serviceRoute);
+          } else {
+            showSnackbar('Wrong Password');
+
+            // password fase
+          }
+        }
+      }
+    } // if 1
   }
+
+  void showSnackbar(String message) {
+    print(message);
+    final snackBar = new SnackBar(
+      duration: new Duration(seconds: 2),
+      backgroundColor: Colors.orange[900],
+      content: Text(message),
+    );
+    myScaffoldsnackbar.currentState.showSnackBar(snackBar);
+  } //คล้าย Toast
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: formkey,
       child: Scaffold(
+        key: myScaffoldsnackbar,
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
