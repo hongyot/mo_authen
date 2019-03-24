@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/register_page.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
 
 // void main() {
 //   runApp(App());
@@ -107,13 +109,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void checkAuthen(BuildContext context) {
+  void checkAuthen(BuildContext context) async {
     print(formkey.currentState.validate());
 
     if (formkey.currentState.validate()) {
       formkey.currentState.save();
       print('email = $email & $password ');
-      
+
+      String urlauthen =
+          'https://www.androidthai.in.th/mo/getUserWhereUserMo.php?isAdd=true&User=$email';
+      var response = await get(urlauthen);
+      var result = json.decode(response.body);
+      print(result);
     }
   }
 
