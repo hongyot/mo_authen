@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert'; //ุชุดคำสั่งในการ convert เป็น String และอ่าน Json ได้
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -6,7 +8,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final formkey = GlobalKey<FormState>();
+  final formkey =
+      GlobalKey<FormState>(); //จำทำ validator ใน form สำหรับ Register
+
+  String nameString;
+  String emailString;
+  String passwordString;
 
   Widget nameTextField() {
     return TextFormField(
@@ -15,6 +22,10 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.length == 0) {
           return 'Please fill your name ?';
         }
+      },
+      onSaved: (String value) {
+        // onsave จะทำงานเมื่อ validator เป็น true เท่านั้น
+        nameString = value.trim();
       },
     );
   }
@@ -28,25 +39,47 @@ class _RegisterPageState extends State<RegisterPage> {
           return 'Please fill your Email?';
         }
       },
+      onSaved: (String value) {
+        emailString = value.trim().toLowerCase();
+      },
     );
   }
 
   Widget passwordTextField() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Password', hintText: 'More than 6 Charector'),validator: (String value){
-            if (value.length <=5) {
-              return 'Please fill your password more than 5 charator';
-            }
-          },
+          labelText: 'Password', hintText: 'More than 6 Charector'),
+      validator: (String value) {
+        if (value.length <= 5) {
+          return 'Please fill your password more than 5 charator';
+        }
+      },
+      onSaved: (String value) {
+        passwordString = value.trim();
+      },
     );
   }
 
-  void sentValueToServer(
-      BuildContext context, String name, String email, String password) {
+  void sentValueToServer(BuildContext context) async {
+    //async เป็นการทำซ้ำ รอค่า
     print('send value');
-
     print(formkey.currentState.validate());
+
+    if (formkey.currentState.validate()) {
+      print('upload to server');
+      formkey.currentState.save(); // ต้องให้ formkey ทำ save จากการป้อนค่า
+      String urlString =
+          'https://www.androidthai.in.th/mo/addDataMo.php?isAdd=true&Name=$nameString&User=$emailString&Password=$passwordString';
+      print(urlString);
+      var response = await get(
+          urlString); // เป็นการ await เพื่อรอ ให้การทำงานขอ website สำเร็จก่อน
+      var result = json.decode(response.body); //เป็นการอ่าน Json ที่ Body ดูว่า เป็น true and false
+      print('result =  $result');
+      if (result.toString()=='true') {
+        Navigator.pop(context); //กลีบหน้าแรก
+        
+      }
+    }
   }
 
   @override
@@ -76,7 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
                 print('Click upload');
-                sentValueToServer(context, 'test', 'test', 'test');
+                sentValueToServer(context);
               },
             )
           ],
