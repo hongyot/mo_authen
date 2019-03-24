@@ -23,6 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final formkey = GlobalKey<FormState>();
+  String email;
+  String password;
+
   Widget Showlogo() {
     return Image.asset('images/korea.png');
   }
@@ -43,14 +47,32 @@ class _HomePageState extends State<HomePage> {
       style: TextStyle(color: Colors.black),
       decoration:
           InputDecoration(labelText: 'Email : ', hintText: 'you@email.com'),
+      validator: (String value) {
+        if (!value.contains('@')) {
+          return 'Please fill Email';
+        }
+        ;
+      },
+      onSaved: (String value) {
+        email = value;
+      },
     );
   }
 
   Widget passwordTextFiedl() {
     return TextFormField(
+      obscureText: true,
       style: TextStyle(color: Colors.black),
       decoration: InputDecoration(
           labelText: 'Password : ', hintText: 'More than 6 Charactor'),
+      validator: (String value) {
+        if (value.length <= 5) {
+          return 'Password less than 6 charator';
+        }
+      },
+      onSaved: (String value) {
+        password = value;
+      },
     );
   }
 
@@ -70,7 +92,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget signinButton() {
+  Widget signinButton(BuildContext context) {
     return RaisedButton(
       color: Colors.redAccent,
       child: Text(
@@ -80,52 +102,65 @@ class _HomePageState extends State<HomePage> {
       ),
       onPressed: () {
         print('You Click Singin');
+        checkAuthen(context);
       },
     );
   }
 
+  void checkAuthen(BuildContext context) {
+    print(formkey.currentState.validate());
+
+    if (formkey.currentState.validate()) {
+      formkey.currentState.save();
+      print('email = $email & $password ');
+      
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Colors.white30, Colors.black45],
-                begin: Alignment(-1, 1))),
-        padding: EdgeInsets.only(top: 80.0),
-        alignment: Alignment.center,
-        child: Column(
-          children: <Widget>[
-            Showlogo(),
-            Container(
-              margin: EdgeInsets.only(top: 10.0),
-              child: ShowTitle(),
-            ),
-            Container(
-                margin: EdgeInsets.only(left: 30.0, right: 30.0, top: 5.0),
-                child: EmailTextField()),
-            Container(
-              margin: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: passwordTextFiedl(),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 50.0, right: 50.0, top: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  new Expanded(
-                    child: Container(
-                      
-                      child: signinButton(),
-                    ),
-                  ),
-                  new Expanded(
-                    child: signupButton(context),
-                  )
-                ],
+    return Form(
+      key: formkey,
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Colors.white30, Colors.black45],
+                  begin: Alignment(-1, 1))),
+          padding: EdgeInsets.only(top: 80.0),
+          alignment: Alignment.center,
+          child: Column(
+            children: <Widget>[
+              Showlogo(),
+              Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: ShowTitle(),
               ),
-            )
-          ],
+              Container(
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0, top: 5.0),
+                  child: EmailTextField()),
+              Container(
+                margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                child: passwordTextFiedl(),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 50.0, right: 50.0, top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    new Expanded(
+                      child: Container(
+                        child: signinButton(context),
+                      ),
+                    ),
+                    new Expanded(
+                      child: signupButton(context),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
